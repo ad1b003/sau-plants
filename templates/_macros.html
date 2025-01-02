@@ -1,0 +1,31 @@
+{% macro head(title="SAU-Plants") -%}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/x-icon" href="/static/SAU-Logo.png">
+        <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+        <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.css" rel="stylesheet">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='colour-scheme.css') }}">
+        <script defer src="{{ url_for('static', filename='toggle-theme.js') }}"></script>
+        <title>{{ title }}</title>
+    </head>
+{%- endmacro %}
+
+{% macro navbar(active) -%}
+    <nav class="bottom tertiary-container">
+        <a class="{{ 'active' if active == 'home' else '' }}" href="{{ url_for('index') }}">
+            <i>home</i>
+            <div>home</div>
+        </a>
+        <a class="{{ 'active' if active == 'search' else '' }}">
+            <i>search</i>
+            <div>search</div>
+        </a>
+        <a id="theme-change-btn" onclick="changeTheme();">
+            <i>light_mode</i>
+            <div>light</div>
+        </a>
+    </nav>
+{%- endmacro %}

@@ -1,0 +1,107 @@
+{% import "_macros.html" as macro %}
+
+<!DOCTYPE html>
+<html lang="en">
+{{ macro.head() }}
+
+<style>
+    .drawer.open {
+        display: block;
+        transform: translateX(0);
+    }
+
+    .drawer.hidden {
+        display: none;
+        transform: translateX(0);
+    }
+
+    .image-container {
+        opacity: 1;
+    }
+
+    .info {
+        opacity: 0;
+        color: chartreuse;
+    }
+
+    .image-container:hover .image {
+        opacity: 0.5;
+    }
+
+    .image-container:hover .info {
+        opacity: 1;
+    }
+</style>
+
+<body>
+    {{ macro.navbar("home") }}
+
+    <header class="tertiary-container">
+        <nav>
+            <button class="circle transparent">
+                <img class="responsive" src="/static/SAU-Logo.png" alt="Tree">
+            </button>
+            <h5 class="max center-align">SAU - Plants</h5>
+            <button class="circle transparent" id="menuButton">
+                <i>menu</i>
+            </button>
+        </nav>
+    </header>
+
+    <nav class="drawer max hidden" id="drawer">
+        <label>catagory</label>
+        <a>
+            <i>fiber_manual_record</i>
+            <span>Label</span>
+        </a>
+        <a>
+            <i>change_history</i>
+            <span>Label</span>
+        </a>
+        <a>
+            <i>stop</i>
+            <span>Label</span>
+        </a>
+        <hr>
+        <label>labels</label>
+        <a>
+            <i>fiber_manual_record</i>
+            <span>Label</span>
+        </a>
+        <a>
+            <i>fiber_manual_record</i>
+            <span>Label</span>
+        </a>
+    </nav>
+
+    <main class="responsive">
+        {% for plant_data in raw_data|reverse %}
+            <article class="border small no-padding responsive image-container">
+                <img src="{{ plant_data[6].split(',')[0] }}" alt="{{ plant_data[1] }}" class="responsive absolute image">
+                <div class="info absolute center middle">
+                    <button class="padding absolute center middle" hx-get="{{ url_for('plant', plant_id=plant_data[0]) }}"
+                        hx-target="body" hx-swap="outerHTML">{{ plant_data[1]
+                        }}</button>
+                </div>
+            </article>
+        {% endfor %}
+    </main>
+</body>
+<style>
+    .drawer {
+            overflow: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+    }
+</style>
+<script>
+    const menuButton = document.getElementById('menuButton');
+    const drawer = document.getElementById('drawer');
+
+    menuButton.addEventListener('click', () => {
+        drawer.classList.toggle('open');
+        drawer.classList.toggle('hidden');
+    });
+</script>
+
+</html>

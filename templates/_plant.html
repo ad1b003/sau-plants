@@ -1,0 +1,163 @@
+{% import "_macros.html" as macro %}
+
+{{ macro.navbar("home") }}
+
+<header class="tertiary-container">
+    <nav>
+        <button class="circle transparent" hx-get="/" hx-target="body" hx-swap="outerHTML">
+            <i>arrow_back</i>
+        </button>
+        <h6 class="max" id="header-title"></h6>
+    </nav>
+</header>
+
+<main class="responsive">
+    {% for data in plant_data %}
+        <script>document.getElementById('header-title').innerHTML = "{{ data[1] }}";</script>
+        <div class="carousel-container">
+            <div class="carousel" id="carousel-{{ loop.index }}">
+                {% for image in data[6].split(',') %}
+                    <div class="carousel-slide">
+                        <img src="{{ image }}" alt="{{ data[1] }}" class="carousel-image" />
+                        <button class="enlarge-btn" onclick="openModal(`{{ image }}`)">
+                            🔍
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-prev" onclick="moveCarousel(`{{ loop.index }}`, -1)">❮</button>
+            <button class="carousel-next" onclick="moveCarousel(`{{ loop.index }}`, 1)">❯</button>
+        </div>
+        <article class="large-text">
+            <p>English Name: <strong class="primary-text">{{ data[1] }}</strong></p>
+            <p>Local Name: <strong class="primary-text">{{ data[2] }}</strong></p>
+            <p>Scientific Name: <strong class="tertiary-text"><em>{{ data[3] }}</em></strong></p>
+            <p>Family: <strong class="underline primary-text">
+                    <a href="">{{ data[4] }}</a></strong></p>
+            <button class="chip fill">{{ data[5] }}</button>
+        </article>
+    {% endfor %}
+</main>
+
+<dialog id="image-modal" class="max">
+    <span class="close-modal absolute top right" onclick="closeModal()"><i>close</i></span>
+    <img id="modal-image" class="modal-content" alt="Enlarged Image">
+</dialog>
+
+<style>
+    .modal-content {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border: 1px solid white;
+    }
+
+    .close-modal {
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    .close-modal:hover,
+    .close-modal:focus {
+        color: #f1f1f1;
+    }
+
+    .enlarge-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .enlarge-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .carousel-container {
+        position: relative;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    .carousel {
+        position: relative;
+        height: 300px;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+
+    .carousel-slide {
+        display: none;
+        height: 100%;
+        position: relative;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .carousel-prev,
+    .carousel-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 15px;
+        font-size: 20px;
+        border-radius: 50%;
+        z-index: 10;
+    }
+
+    .carousel-prev {
+        left: 10px;
+    }
+
+    .carousel-next {
+        right: 10px;
+    }
+</style>
+
+<script>
+    function moveCarousel(index, direction) {
+        const carousel = document.getElementById(`carousel-${index}`);
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        const activeIndex = Array.from(slides).findIndex(slide => slide.style.display !== 'none');
+
+        slides.forEach(slide => (slide.style.display = 'none'));
+        const nextIndex = (activeIndex + direction + slides.length) % slides.length;
+        slides[nextIndex].style.display = 'block';
+    }
+
+    document.querySelectorAll('.carousel').forEach(carousel => {
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        slides.forEach(slide => (slide.style.display = 'none'));
+        slides[0].style.display = 'block';
+    });
+
+    function openModal(imageSrc) {
+        const modal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        modalImage.src = imageSrc;
+        modal.showModal();
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('image-modal');
+        modal.close();
+    }
+</script>
