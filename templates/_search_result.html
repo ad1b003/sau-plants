@@ -1,0 +1,25 @@
+{% import "_macros.html" as macro %}
+
+{% if where %}
+    <header class="tertiary-container">
+        <nav>
+            <button class="circle transparent" hx-get="{{ previous_page }}" hx-target="body" hx-swap="outerHTML">
+                <i>arrow_back</i>
+            </button>
+            <h6 class="max" id="header-title">serached for: <strong class="primary-text">"{{ search_term }}"</strong> in <em class="secondary-text">{{ where }}</em></h6>
+        </nav>
+    </header>
+{% endif %}
+
+<main class="responsive">
+    {% if search_results %}
+        {% for plant_data in search_results|reverse %}
+            {{ macro.plantThumbnail(plant_data) }}
+        {% endfor %}
+    {% else %}
+        <article class="center-align surface-container-highest">
+            <h3>Sorry 😥 </h3>
+            <h6>No results found for: <em>{{ search_term }}</em></h6>
+        </article>
+    {% endif %}
+</main>
