@@ -1,16 +1,18 @@
 {% macro head(title="SAU-Plants") -%}
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/x-icon" href="/static/SAU-Logo.png">
-        <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-        <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.css" rel="stylesheet">
-        <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.js"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='colour-scheme.css') }}">
-        <script defer src="{{ url_for('static', filename='toggle-theme.js') }}"></script>
-        <title>{{ title }}</title>
-    </head>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/SAU-Logo.png">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.css" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.8/dist/cdn/beer.min.js"></script>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='colour-scheme.css') }}">
+    <script defer src="{{ url_for('static', filename='toggle-theme.js') }}"></script>
+    <title>{{ title }}</title>
+</head>
 {%- endmacro %}
 
 {% macro navbar(active) -%}
@@ -19,7 +21,8 @@
             <i>home</i>
             <div>home</div>
         </a>
-        <a class="{{ 'active' if active == 'search' else '' }}">
+        <a class="{{ 'active' if active == 'search' else '' }}" hx-get="{{ url_for('searchPage') }}" hx-target="body"
+            hx-swap="outerHTML">
             <i>search</i>
             <div>search</div>
         </a>
@@ -28,4 +31,16 @@
             <div>light</div>
         </a>
     </nav>
+{%- endmacro %}
+
+{% macro plantThumbnail(plant_data) -%}
+    <article class="border small no-padding responsive image-container">
+        <img src="{{ plant_data['image_path'].split(',')[0] }}" alt="{{ plant_data['english_name'] }}" class="responsive absolute image">
+        <div class="info absolute center middle">
+            <button class="padding absolute center middle" hx-get="{{ url_for('plant', plant_id=plant_data['uuid']) }}"
+                hx-target="body" hx-swap="outerHTML">
+                {{ plant_data['english_name'] }}
+            </button>
+        </div>
+    </article>
 {%- endmacro %}
