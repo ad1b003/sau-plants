@@ -1,0 +1,37 @@
+{% import "_macros.html" as macro %}
+
+{{ macro.navbar("search") }}
+
+<header class="tertiary-container">
+    <nav>
+        <button class="circle transparent" hx-get="{{ previous_page }}" hx-target="body" hx-swap="outerHTML">
+            <i>arrow_back</i>
+        </button>
+        <h6 class="max" id="header-title">
+            <div class="field label suffix border">
+                <input type="search" name="search_term" id="search" hx-get="/search" hx-trigger="keyup changed delay:350ms" hx-target="#search-results">
+                <label>search</label>
+                <i>search</i>
+              </div>
+        </h6>
+    </nav>
+</header>
+
+<main class="responsive" id="search-results">
+    {% if search_term %}
+        <h4>You've searched for: <em>{{ search_term }}</em></h4>
+    {% else %}
+        <article class="surface-container-highest center-align">
+            <h4>🔍 Try searching for a plant 🌱🌵🌿☘</h4>
+            <h5>Poacece, Mango, <em>Oryza sativa</em></h5>
+            <h6>⚠️⚠️⚠️ Search terms are case sensitive ⚠️⚠️⚠️</h6>
+            <pre>
+                English name: First letter uppercase and rest lowercase
+                Local name: In Bengali
+                Scientific name: First letter uppercase and rest lowercase
+                Family: First letter uppercase and rest lowercase
+                Category: lowercase
+            </pre>
+        </article>
+    {% endif %}
+</main>
