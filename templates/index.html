@@ -42,7 +42,7 @@
                 <img class="responsive" src="/static/SAU-Logo.png" alt="Tree">
             </button>
             <h5 class="max center-align">SAU - Plants</h5>
-            <button class="circle transparent" id="menuButton">
+            <button class="circle transparent" id="menuButton" onclick="toggleDrawer()">
                 <i>menu</i>
             </button>
         </nav>
@@ -76,32 +76,23 @@
 
     <main class="responsive">
         {% for plant_data in raw_data|reverse %}
-            <article class="border small no-padding responsive image-container">
-                <img src="{{ plant_data[6].split(',')[0] }}" alt="{{ plant_data[1] }}" class="responsive absolute image">
-                <div class="info absolute center middle">
-                    <button class="padding absolute center middle" hx-get="{{ url_for('plant', plant_id=plant_data[0]) }}"
-                        hx-target="body" hx-swap="outerHTML">{{ plant_data[1]
-                        }}</button>
-                </div>
-            </article>
+            {{ macro.plantThumbnail(plant_data) }}
         {% endfor %}
     </main>
-</body>
-<style>
-    .drawer {
-            overflow: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-    }
-</style>
-<script>
-    const menuButton = document.getElementById('menuButton');
-    const drawer = document.getElementById('drawer');
-
-    menuButton.addEventListener('click', () => {
+    <style>
+        .drawer {
+                overflow: auto;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+        }
+    </style>
+    <script>
+        function toggleDrawer() {
+        const drawer = document.getElementById('drawer');
         drawer.classList.toggle('open');
         drawer.classList.toggle('hidden');
-    });
-</script>
+    }
+    </script>
+</body>
 
 </html>
