@@ -4,7 +4,7 @@
 
 <header class="tertiary-container">
     <nav>
-        <button class="circle transparent" hx-get="/" hx-target="body" hx-swap="outerHTML">
+        <button class="circle transparent" hx-get="{{ previous_page }}" hx-target="body" hx-swap="outerHTML">
             <i>arrow_back</i>
         </button>
         <h6 class="max" id="header-title"></h6>
@@ -12,31 +12,37 @@
 </header>
 
 <main class="responsive">
-    {% for data in plant_data %}
-        <script>document.getElementById('header-title').innerHTML = "{{ data[1] }}";</script>
-        <div class="carousel-container">
-            <div class="carousel" id="carousel-{{ loop.index }}">
-                {% for image in data[6].split(',') %}
-                    <div class="carousel-slide">
-                        <img src="{{ image }}" alt="{{ data[1] }}" class="carousel-image" />
-                        <button class="enlarge-btn" onclick="openModal(`{{ image }}`)">
-                            🔍
-                        </button>
-                    </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-prev" onclick="moveCarousel(`{{ loop.index }}`, -1)">❮</button>
-            <button class="carousel-next" onclick="moveCarousel(`{{ loop.index }}`, 1)">❯</button>
+    <script>document.getElementById('header-title').innerHTML = "{{ plant_data['english_name'] }}";</script>
+    <div class="carousel-container">
+        <div class="carousel" id="carousel">
+            {% for image in plant_data['image_path'].split(',') %}
+                <div class="carousel-slide">
+                    <img src="{{ image }}" alt="{{ plant_data['english_name'] }}" class="carousel-image" />
+                    <button class="enlarge-btn" onclick="openModal(`{{ image }}`)">
+                        🔍
+                    </button>
+                </div>
+            {% endfor %}
         </div>
-        <article class="large-text">
-            <p>English Name: <strong class="primary-text">{{ data[1] }}</strong></p>
-            <p>Local Name: <strong class="primary-text">{{ data[2] }}</strong></p>
-            <p>Scientific Name: <strong class="tertiary-text"><em>{{ data[3] }}</em></strong></p>
-            <p>Family: <strong class="underline primary-text">
-                    <a href="">{{ data[4] }}</a></strong></p>
-            <button class="chip fill">{{ data[5] }}</button>
-        </article>
-    {% endfor %}
+        <button class="carousel-prev" onclick="moveCarousel(-1)">❮</button>
+        <button class="carousel-next" onclick="moveCarousel( 1)">❯</button>
+    </div>
+    <article class="large-text">
+        <p>English Name: <strong class="primary-text">{{ plant_data['english_name'] }}</strong></p>
+        <p>Local Name: <strong class="primary-text">{{ plant_data['local_name'] }}</strong></p>
+        <p>Scientific Name: <strong class="tertiary-text"><em>{{ plant_data['scientific_name'] }}</em></strong></p>
+        <p>Family: <strong class="underline primary-text">
+                <a hx-get="{{ url_for('searchBy', where='family', term=plant_data['family']) }}"
+                hx-target="body" hx-swap="outerHTML">{{ plant_data['family'] }}</a></strong></p>
+        <div>
+            {% for category in plant_data['category'].split(',') %}
+                <button class="chip fill"
+                hx-get="{{ url_for('searchBy', where='category', term=category) }}"
+                hx-target="body" hx-swap="outerHTML"
+                >{{ category }}</button>
+            {% endfor %}
+        </div>
+    </article>
 </main>
 
 <dialog id="image-modal" class="max">
@@ -133,8 +139,8 @@
 </style>
 
 <script>
-    function moveCarousel(index, direction) {
-        const carousel = document.getElementById(`carousel-${index}`);
+    function moveCarousel(direction) {
+        const carousel = document.getElementById('carousel');
         const slides = carousel.querySelectorAll('.carousel-slide');
         const activeIndex = Array.from(slides).findIndex(slide => slide.style.display !== 'none');
 
