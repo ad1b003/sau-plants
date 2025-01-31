@@ -5,52 +5,94 @@
 {{ macro.head("admin") }}
 
 <body>
-
-    <main class="responsive">
+    {% if session %}
+        <header>
+            <nav>
+            <button class="circle transparent">
+                <i>arrow_back</i>
+            </button>
+            <h5 class="max center-align">welcome admin</h5>
+            <button class="circle transparent" onclick="window.location.href=`{{ url_for('getOut') }}`">
+                <img class="responsive" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Mimosa_pudika_flower_from_Thrissur%2C_Kerala%2C_India.JPG/262px-Mimosa_pudika_flower_from_Thrissur%2C_Kerala%2C_India.JPG">
+            </button>
+            </nav>
+        </header>
+        <main class="responsive">
+            <article class="border">
+                <h3 class="">add new plant</h3>
+                <form id="add-plant-form" method="POST" hx-post="{{ url_for('addPlant') }}" hx-target="body"
+                    hx-swap="outerHTML">
+                    <div class="field label border large">
+                        <input type="text" name="eng-name" id="eng-name" required>
+                        <label>english name</label>
+                    </div>
+                    <div class="field label border large">
+                        <input type="text" name="local-name" id="local-name" required>
+                        <label>local name</label>
+                    </div>
+                    <div class="field label border large">
+                        <input type="text" name="sci-name" id="sci-name" required>
+                        <label>scientific name</label>
+                    </div>
+                    <div class="field label border large">
+                        <input type="text" name="family" id="family" required>
+                        <label>family</label>
+                    </div>
+                    <div class="field label border large">
+                        <input type="text" name="img-link" id="img-link">
+                        <label>image link</label>
+                    </div>
+                    <button type="button" class="large-round secondary large-elevate" onclick="addImage()">Add
+                        Image</button>
+                    <div id="image-preview-container" class="row center-align"></div>
+                    <input type="hidden" name="plant-image-paths" id="plant-image-paths">
+                    <div id="selected-categories"></div>
+                    <div class="field label suffix border">
+                        <select name="category" id="category">
+                            <option value="">Select a category</option>
+                            <option value="cereal">cereal</option>
+                            <option value="fiber">fiber</option>
+                            <option value="flower">flower</option>
+                            <option value="fruit">fruit</option>
+                            <option value="medicinal">medicinal</option>
+                            <option value="MPT">MPT</option>
+                            <option value="narcotic">narcotic</option>
+                            <option value="oil yeilding">oil yeilding</option>
+                            <option value="ornamental">ornamental</option>
+                            <option value="pulse">pulse</option>
+                            <option value="suger">sugar</option>
+                            <option value="timber">timber</option>
+                        </select>
+                        <label>plant category</label>
+                        <i>arrow_drop_down</i>
+                    </div>
+                    <input type="hidden" name="categories" id="categories">
+                    <div class="row center-align">
+                        <button class="large-round primary large-elevate" type="submit">add</button>
+                        <button class="large-round primary large-elevate" type="reset">reset</button>
+                    </div>
+                </form>
+            </article>
+        {% else %}
         <article class="border">
-            <h3 class="">add new plant</h3>
-            <form id="add-plant-form" action="{{ url_for('addPlant') }}" method="POST">
+            <form action="{{ url_for('getIn') }}" method="POST">
                 <div class="field label border large">
-                    <input type="text" name="eng-name" id="eng-name" required>
-                    <label>english name</label>
-                </div>
-                <div class="field label border large">
-                    <input type="text" name="local-name" id="local-name" required>
-                    <label>local name</label>
-                </div>
-                <div class="field label border large">
-                    <input type="text" name="sci-name" id="sci-name" required>
-                    <label>scientific name</label>
-                </div>
-                <div class="field label border large">
-                    <input type="text" name="family" id="family" required>
-                    <label>family</label>
-                </div>
-                <div class="field label border large">
-                    <input type="text" name="img-link" id="img-link">
-                    <label>image link</label>
-                </div>
-                <button type="button" class="large-round secondary large-elevate" onclick="addImage()">Add
-                    Image</button>
-                <div id="image-preview-container" class="row center-align"></div>
-                <input type="hidden" name="plant-image-paths" id="plant-image-paths">
-                <div class="field border label">
-                    <select name="category" id="category">
-                        <option value="cereal">cereal</option>
-                        <option value="ornamental">ornamental</option>
-                        <option value="flower">flower</option>
-                    </select>
-                    <label>plant category</label>
+                    <input type="password" name="secret" id="secret" required>
+                    <label>secret</label>
                 </div>
                 <div class="row center-align">
-                    <button class="large-round primary large-elevate" type="submit">add</button>
-                    <button class="large-round primary large-elevate" type="reset">reset</button>
+                    <button class="large-round primary large-elevate" type="submit">in</button>
                 </div>
             </form>
         </article>
+        {% endif %}
     </main>
 
     <script>
+        const selectedCategories = [];
+        const categorySelect = document.getElementById('category');
+        const selectedCategoriesContainer = document.getElementById('selected-categories');
+        const hiddenCategoriesInput = document.getElementById('categories');
         const imageLinks = [];
 
         function addImage() {
@@ -58,13 +100,10 @@
             const imgLink = imgLinkInput.value.trim();
 
             if (imgLink) {
-                // Add the link to the array
                 imageLinks.push(imgLink);
 
-                // Update hidden input value
-                updateHiddenInput();
+                updateHiddenInput('plant-image-paths', imageLinks);
 
-                // Create a small preview of the image with a remove button
                 const imgPreviewContainer = document.createElement('div');
                 imgPreviewContainer.style.display = 'inline-block';
                 imgPreviewContainer.style.margin = '5px';
@@ -76,6 +115,7 @@
                 imgPreview.style.width = '50px';
 
                 const removeButton = document.createElement('button');
+                removeButton.type = 'button';
                 removeButton.className = 'badge min';
                 removeButton.innerText = '🗑';
                 // removeButton.innerHTML = `<i>delete</i>`;
@@ -86,11 +126,7 @@
 
                 imgPreviewContainer.appendChild(imgPreview);
                 imgPreviewContainer.appendChild(removeButton);
-
-                // Append to the preview container
                 document.getElementById('image-preview-container').appendChild(imgPreviewContainer);
-
-                // Clear the input field
                 imgLinkInput.value = '';
             } else {
                 alert("Please enter a valid image link.");
@@ -99,27 +135,76 @@
         }
 
         function removeImage(imgLink, imgPreviewContainer) {
-            // Remove the link from the array
             const index = imageLinks.indexOf(imgLink);
             if (index !== -1) {
                 imageLinks.splice(index, 1);
             }
 
-            // Remove the preview container
             imgPreviewContainer.remove();
 
-            // Update hidden input value
-            updateHiddenInput();
+            updateHiddenInput('plant-image-paths', imageLinks);
         }
 
-        function updateHiddenInput() {
-            document.getElementById('plant-image-paths').value = imageLinks.join(',');
+        function updateHiddenInput(id, list) {
+            document.getElementById(id).value = list.join(',');
         }
 
-        // Form submission validation
+        categorySelect.addEventListener('change', function () {
+            const selectedOption = this.value;
+
+            if (selectedOption && !selectedCategories.includes(selectedOption)) {
+                selectedCategories.push(selectedOption);
+
+                updateHiddenInput('categories', selectedCategories);
+
+                // chip
+                const chip = document.createElement('button');
+                chip.className = 'chip fill';
+                chip.type = 'button'; // prevent form submission
+                chip.innerHTML = `<span>${selectedOption}</span> <i>close</i>`;
+                chip.onclick = function () { removeCategory(selectedOption); };
+
+                selectedCategoriesContainer.appendChild(chip);
+
+                const optionToRemove = Array.from(categorySelect.options).find(option => option.value === selectedOption);
+                if (optionToRemove) {
+                    optionToRemove.remove();
+                }
+            }
+            this.value = '';
+        });
+
+        function removeCategory(category) {
+            console.log(category);
+            event.preventDefault();
+
+            const index = selectedCategories.indexOf(category);
+            if (index !== -1) {
+                selectedCategories.splice(index, 1);
+            }
+
+            updateHiddenInput('categories', selectedCategories);
+
+            Array.from(selectedCategoriesContainer.children).forEach(chip => {
+                if (chip.textContent.includes(category)) {
+                    chip.remove();
+                }
+            });
+
+            const newOption = document.createElement('option');
+            newOption.value = category;
+            newOption.textContent = category;
+            categorySelect.appendChild(newOption);
+        }
+
         document.getElementById('add-plant-form').onsubmit = function (event) {
             if (imageLinks.length === 0) {
                 alert("Please add at least one image.");
+                event.preventDefault();
+            }
+
+            if (selectedCategories.length === 0) {
+                alert("Please add at least one category.");
                 event.preventDefault();
             }
         };
